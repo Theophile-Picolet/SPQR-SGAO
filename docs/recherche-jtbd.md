@@ -106,16 +106,6 @@ Conclusion :
 
 ✅ Le JTBD est confirmé : La centralisation des références est un besoin critique, non résolu par les outils actuels (Excel, emails, CRM non adaptés).
 
->4. Recommandations pour la suite
-
-Prioriser le développement d’une solution de centralisation avec :
-
-Recherche intelligente (mots-clés, filtres par secteur/montant/année).
-Intégration aux outils existants (CRM, Excel, emails).
-Export automatique au format demandé par les acheteurs (tableaux, PDF, etc.).
-
-
-
 ---
 
 

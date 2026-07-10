@@ -32,7 +32,7 @@ Les cabinets de conseil en politique et finances publiques répondent à de nomb
 ### **Persona Principal : Auguste, Consultant Senior en Finances Publiques**
 - **Rôle** : Rédaction des réponses aux AO.
 - **Fréquence** : 1-2 AO/semaine.
-- **Pain Point** :
+- **frustration** :
   > *"Je passe 3-4 heures à chercher les bonnes références au lieu de rédiger la réponse. Parfois, j’oublie une référence clé parce qu’elle est dans un fichier Excel sur l’ordinateur d’un collègue."*
 - **Gain Attendu** :
   - Retrouver les références pertinentes en **5-10 minutes max**.
@@ -53,9 +53,10 @@ Les cabinets de conseil en politique et finances publiques répondent à de nomb
 ---
 ## **3. Proposition de Valeur Unique (USP)**
 **SGAO est le seul outil conçu spécifiquement pour les cabinets de conseil en politique/finances publiques, qui permet :**
-✅ **Centralisation instantanée** : Toutes les références du cabinet accessibles en **1 clic**, depuis n’importe quel appareil.
-✅ **Recherche ultra-rapide** : Filtres par **pôle, type de mission, année, collectivité, montant, statut (gagné/perdu)**.
-✅ **Intégration légère** : Première intégration en base de données avec un script sql, puis intégration au fur et à mesure des nouvelles références par un jeune consultant du groupe → **pas de migration complexe**.
+
+- **Centralisation instantanée** : Toutes les références du cabinet accessibles en **1 clic**, depuis n’importe quel appareil.
+- **Recherche ultra-rapide** : Filtres par **pôle, type de mission, année, collectivité, montant, statut (gagné/perdu)**.
+- **Intégration légère** : Première intégration en base de données avec un script sql, puis intégration au fur et à mesure des nouvelles références par un jeune consultant du groupe → **pas de migration complexe**.
 
 **Différenciation vs. concurrents (Responsive, Loopio, etc.)** :
  | Critère               | SGAO                          | Outils génériques (Responsive, Loopio)       |
