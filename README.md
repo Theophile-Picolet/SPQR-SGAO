@@ -259,12 +259,5 @@ Backend Business Logic
 
 ---
 
-##  Licence
-
-À définir
-
----
-
 **Dernière mise à jour** : 2026-07-10  
 **Phase** : 1 (En cours)  
-**Status** : 🟢 Production-ready architecture
