@@ -41,8 +41,17 @@ Les cabinets de conseil en politique et finances publiques répondent à de nomb
 ### **Utilisateurs Secondaires**
  | Rôle               | Besoins                                                                                     | Fréquence d’utilisation |
  |--------------------|---------------------------------------------------------------------------------------------|-------------------------|
- | **Admin**          | Gestion des utilisateurs/rôles, import initial des références existantes.                  | Ponctuelle              |
- | **Consultants Juniors** | Recherche/consultation des références, ajout de nouvelles références (supervisé).       | Hebdomadaire            |
+ | **Admin**          | Gestion des utilisateurs/rôles, import initial des références existantes, suppression.      | Ponctuelle              |
+ | **Manager**        | Validation des demandes de modification sur ses références affectées, suivi de ses consultants, garantie de la qualité des données. | Quotidienne (traitement de la file d'attente) |
+ | **Consultants Juniors** | Recherche/consultation des références, création de nouvelles références, demandes de modification sur leurs références affectées. | Hebdomadaire            |
+
+### **Modèle de responsabilité**
+
+La qualité des données est le point faible identifié d'une base de références partagée. Le modèle retenu répartit les responsabilités ainsi :
+
+- **Création ouverte** : tout utilisateur peut créer une référence. La première insertion massive est réalisée par la personne en charge (script SQL), puis chacun alimente la base. Aucun goulot d'étranglement à la saisie.
+- **Modification contrôlée** : seuls l'admin et les managers affectés à la référence la modifient directement. Un consultant affecté soumet une demande de modification ou de suppression ; les modifications sont validées par un manager affecté ou un admin, les suppressions par l'admin seul. Une donnée validée ne peut donc pas être dégradée silencieusement.
+- **Affectation explicite** : le créateur est affecté d'office ; l'admin complète l'équipe. L'affectation conditionne l'accès au détail et aux commentaires, ce qui garde les échanges internes dans le cercle des personnes concernées, sans nuire à la recherche transversale (la liste des références reste visible de tous).
 
 **Justification de la cible** :
 - **Focus sur les cabinets de conseil en politique/finances publiques** (fort volume d’AO, peu outillés).
@@ -80,10 +89,15 @@ Les cabinets de conseil en politique et finances publiques répondent à de nomb
 ### **Core Feature : Moteur de Recherche Centralisé**
  | Fonctionnalité               | Description                                                                                     | Priorité |
  |------------------------------|-------------------------------------------------------------------------------------------------|----------|
- | **Créer/Éditer une référence** | Saisie des infos d’un AO : client, pôle, type de mission, année, montant, description, remport, commentaire. | ⭐⭐⭐ |
+ | **Créer une référence**      | Saisie des infos d’un AO : client, pôle, type de mission, année, montant, description, remport, commentaire. Ouverte à tous, avec auto-affectation du créateur. | ⭐⭐⭐ |
  | **Recherche multi-critères** | Filtres combinables : **pôle, type de mission, année, collectivité, montant, statut (gagné/perdu)**. | ⭐⭐⭐ |
- | **Dashboard**                | Liste des références avec filtres appliqués + vue "Dernières ajoutées".                        | ⭐⭐⭐ |
- | **Gestion des utilisateurs** | CRUD utilisateurs + attribution de rôles (Admin/Consultant).                                      | ⭐⭐    |
+ | **Dashboard**                | Liste de **toutes** les références avec filtres appliqués + vue "Dernières ajoutées".            | ⭐⭐⭐ |
+ | **Mes références**           | Vue restreinte aux références affectées : détail complet et commentaires.                        | ⭐⭐⭐ |
+ | **Éditer une référence**     | Modification directe réservée à l'admin et aux managers affectés.                                            | ⭐⭐⭐ |
+ | **Demande de modification**  | Un consultant affecté soumet des valeurs (ou demande une suppression), un manager affecté ou l'admin valide ou rejette. La référence n'est modifiée qu'après approbation. | ⭐⭐⭐ |
+ | **Affectation des références** | L'admin attribue une référence à un ou plusieurs utilisateurs.                               | ⭐⭐⭐ |
+ | **Notifications**            | Affectation, demande soumise, décision de validation, nouveau commentaire.                       | ⭐⭐    |
+ | **Gestion des utilisateurs** | Création, modification, désactivation/réactivation logique des comptes + attribution de rôles (Consultant/Manager/Admin).                             | ⭐⭐    |
  | **Authentification**         | Login/Logout sécurisé (JWT).                                                                     | ⭐⭐    |
 
 **Exemple d’interface (Wireframe textuel)** :
@@ -100,7 +114,8 @@ Les cabinets de conseil en politique et finances publiques répondent à de nomb
 ### **Out of Scope (Hors Périmètre V1)**
 ❌ **Tableaux statistiques** (CA, taux de remport) → V2.
 ❌ **Diagrammes avancés** (graphiques, visualisations) → V2.
-❌ **Gestion des AO en cours** (suivi des deadlines, collaboration, notifications) → V2.
+❌ **Gestion des AO en cours** (suivi des deadlines, notifications par email ou push) → V2.
+   Note : les notifications **in-app** liées aux affectations, demandes de modification et commentaires font partie de la V1 (elles conditionnent le circuit de validation).
 ❌ **Export PDF** des références → V3.
 ❌ **IA/Recommandations** (suggestions automatiques de références) → V4.
 
@@ -129,7 +144,8 @@ Les cabinets de conseil en politique et finances publiques répondent à de nomb
 | Risque                          | Impact          | Mitigation                                                                 |
 |---------------------------------|-----------------|----------------------------------------------------------------------------|
 | **Résistance à l’adoption**     | Faible          | Formation + support dédié (1h/semaine).                                  |
-| **Qualité des données**         | Moyen           | Template de saisie obligatoire + validation admin pour modifications.                     |
+| **Qualité des données**         | Moyen           | Template de saisie obligatoire + circuit de validation manager/admin pour toute modification d'une référence existante. |
+| **Friction du circuit de validation** | Moyen     | File d'attente visible avec badge + notifications aux managers ; les managers modifient directement, sans demande. |
 | **Performance (1000+ références)** | Élevé       | Base de données optimisée (indexation) + tests de charge.               |
 | **Concurrence (outils génériques)** | Moyen      | **USP** : Simplicité + prix adapté aux PME du secteur.                  |
 
