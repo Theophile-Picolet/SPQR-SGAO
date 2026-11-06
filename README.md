@@ -1,6 +1,6 @@
 # SPQR-SGAO : Système de Gestion Centralisé des Références pour Appels d'Offres
 
-Un Micro-SaaS haute performance, sécurisé et éco-conçu pour les cabinets de conseil.
+Un Micro-SaaS performant, sécurisé et éco-conçu pour les cabinets de conseil.
 
 ## Le Problème
 
