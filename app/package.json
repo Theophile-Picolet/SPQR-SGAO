@@ -1,0 +1,9 @@
+{
+  "name": "spqr-sgao",
+  "private": true,
+  "workspaces": ["server"],
+  "scripts": {
+    "dev:server": "npm run dev --workspace server",
+    "build": "npm run build --workspaces --if-present"
+  }
+}

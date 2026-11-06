@@ -57,7 +57,7 @@ Client (Navigateur)
    │                      │
    ↓                      ↓
 Frontend Statique    Backend API
-(Next.js SSG)        (Express.js)
+(Next.js SSG)        (Fastify)
    │                      │
    └──────────────────────┴──→ PostgreSQL
 ```
@@ -71,8 +71,8 @@ Frontend Statique    Backend API
 
 ### Backend
 - **Runtime** : Node.js 18+
-- **Framework** : Express.js 4.x (minimaliste, performant)
-- **Validation** : Joi (déclarative, sécurisée)
+- **Framework** : Fastify (TypeScript, plugins officiels, faible surcoût)
+- **Validation** : schémas JSON natifs de Fastify (données envoyées par le front)
 - **Authentication** : JWT stateless dans un cookie HttpOnly (1h, SameSite=Strict) + Argon2 password hashing
 - **Logging** : Logging centralisé via Nginx (access logs + error tracking via API)
 
@@ -94,7 +94,7 @@ Frontend Statique    Backend API
 |-------|--------|----------|
 | **SSG (Next.js)** | Pages pré-générées → <100ms TTFB | 5x plus rapide qu'une SPA |
 | **Asset hashing** | Tous les fichiers statiques (JS, CSS, polices, images) hachés : cache 1 an sans invalidation manuelle | 99%+ cache hit |
-| **ETag par version de données** | Calculé par Express sans requête SQL : lecture inchangée = `304` sans payload ni accès à la base | Lectures répétées sans requête en base |
+| **ETag par version de données** | Calculé par Fastify sans requête SQL : lecture inchangée = `304` sans payload ni accès à la base | Lectures répétées sans requête en base |
 | **Lazy-loading** | Code-split par route, chargement parallèle | LCP < 2.5s |
 
 **Résultat** : Page charge en <2.5s, puis données en parallèle. Utilisateur ne ressent aucune attente.
@@ -106,7 +106,7 @@ Frontend Statique    Backend API
 | **Nginx centralisé** | 1 point d'entrée pour tous les headers (CSP, X-Frame, etc.) |
 | **Rate-limiting** | Limite par IP sur l'API et, plus strictement, sur la connexion (valeurs provisoires, à confirmer en fin de projet) |
 | **JWT dans un cookie HttpOnly** | Pas de session server-side ; jeton illisible par le JavaScript (`SameSite=Strict`, 1h) |
-| **Joi validation** | Toutes les entrées validées (SQL injection, XSS) |
+| **Validation par schéma JSON** | Toutes les entrées validées (SQL injection, XSS) |
 | **CORS strict** | Whitelist d'origines, credentials contrôlés |
 | **RBAC 3 rôles** | consultant / manager / admin — écriture directe sur les références réservée à l'admin et aux managers affectés |
 | **Cloisonnement par affectation** | Détail et commentaires réservés aux utilisateurs affectés, contrôle rejoué côté backend |
@@ -160,7 +160,7 @@ SPQR-SGAO/
     ├── wireframes/wireframe.pen     Maquettes Hi-Fi et design system
     └── diagrams/
         ├── 01-USE-CASES.md          Use cases UML
-        ├── 02-DEPLOYMENT.md         Déploiement (Next.js + Nginx + Express)
+        ├── 02-DEPLOYMENT.md         Déploiement (Next.js + Nginx + Fastify)
         ├── 03-SEQUENCE.md           Diagramme de séquence
         └── 04-MERISE.md             MCD/MLD/MPD
 ```
@@ -183,13 +183,13 @@ SPQR-SGAO/
 
 ```
 1. JS fetch('/api/references?division_id=3')
-2. Nginx relaie /api à Express (aucun cache dans Nginx)
-3. Express valide le JWT (cookie) et les droits, puis exécute la requête SQL
+2. Nginx relaie /api à Fastify (aucun cache dans Nginx)
+3. Fastify valide le JWT (cookie) et les droits, puis exécute la requête SQL
 4. Retour JSON + ETag, Cache-Control: private, no-cache (le navigateur garde la réponse)
 
 À chaque lecture suivante (même après une déconnexion) :
 5. Le navigateur envoie If-None-Match avec l'ETag gardé
-6. Express contrôle la session et les droits, puis calcule l'ETag courant depuis des compteurs de version en mémoire
+6. Fastify contrôle la session et les droits, puis calcule l'ETag courant depuis des compteurs de version en mémoire
 7. Données inchangées → 304 Not Modified, sans requête SQL ni payload
 8. Une écriture a eu lieu → 200 avec la nouvelle donnée
 ```
@@ -201,9 +201,9 @@ Nginx Rate-limiting (API et connexion)
     ↓
 Nginx Headers Security (CSP, X-Frame, etc.)
     ↓
-Express JWT Validation
+Fastify JWT Validation
     ↓
-Express Joi Input Validation
+Fastify JSON Schema Input Validation
     ↓
 PostgreSQL Parameterized Queries
     ↓
@@ -235,7 +235,7 @@ Backend Business Logic
 
 ### Phase 2 : Développement 
 - Setup Next.js SSG + Nginx
-- Backend Express + PostgreSQL
+- Backend Fastify + PostgreSQL
 - Docker Compose (frontend, backend, DB, reverse-proxy)
 - Tests unitaires + intégration (DB de test en container)
 - CI/CD GitHub Actions (lint, tests, build Docker, push images)
@@ -257,13 +257,13 @@ Backend Business Logic
 
 ### Stack à utiliser
 - **Frontend** : Next.js 14+, JSX, SCSS + Bootstrap
-- **Backend** : Node.js 18+ + Express + Joi + Argon2
+- **Backend** : Node.js + Fastify + Argon2
 - **Database** : PostgreSQL 14+
 - **Infra** : Nginx reverse-proxy (fichiers statiques, compression, logging, rate-limiting)
 - **Containerization** : Docker + Docker Compose (obligatoire)
 - **Lint / format** : Biome (front et back)
 - **Tests** : Jest + Supertest + ts-jest (back), Jest + Testing Library (front), Playwright (E2E)
-- **Hooks Git** : Husky + lint-staged ; commitlint (Conventional Commits) ; tests unitaires au pre-push. Tests d'intégration en CI sur chaque PR, E2E en CI à chaque merge sur `main`
+- **Hooks Git** : Husky + lint-staged ; commitlint (Conventional Commits) ; Biome (lint et format) au pre-push, bloquant. Tests unitaires (back et front), d'intégration (routes et base) et E2E en CI sur chaque PR vers `staging`. Branches : `dev` (code validé), `staging` (tests), `feat/…` (une par issue), `main` (production, epic L)
 - **CI/CD** : GitHub Actions (commitlint, lint, tests, build, déploiement)
 - **Hébergement** : VPS OVH (Docker Compose, Nginx)
 
@@ -273,7 +273,7 @@ Backend Business Logic
 - ETag par version de données pour les réponses API (calculé sans requête SQL), `Cache-Control: private, no-cache`
 - Aucun cache API dans Nginx (réponses propres à l'utilisateur)
 - Rate-limiting Nginx (valeurs provisoires, à confirmer en fin de projet)
-- Validation Joi sur toutes les routes
+- Validation par schéma JSON sur toutes les routes qui reçoivent des données du front
 - JWT + Argon2 pour authentification sécurisée
 - Argon2 password hashing (salt automatique, config OWASP)
 - Logging centralisé via Nginx (access logs)
