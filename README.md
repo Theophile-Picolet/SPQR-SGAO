@@ -64,8 +64,8 @@ Frontend Statique    Backend API
 
 ### Frontend
 - **Framework** : [Next.js 14+](https://nextjs.org/) (Static Site Generation)
-- **Language** : JSX (JavaScript avec syntaxe React)
-- **Styling** : SCSS + Bootstrap ; icônes Lucide (import par icône)
+- **Language** : TypeScript (fichiers `.tsx`)
+- **Styling** : CSS natif (variables CSS, imbrication, approche OOCSS), sans Bootstrap ni Sass ; icônes Lucide (import par icône)
 - **Bundle** : <200KB gzipped (lazy-loaded par route)
 - **Deployment** : HTML statique pré-généré (zéro calcul runtime)
 
@@ -256,7 +256,7 @@ Backend Business Logic
 3. Consulter [diagrams/02-DEPLOYMENT.md](docs/diagrams/02-DEPLOYMENT.md) → architecture système
 
 ### Stack à utiliser
-- **Frontend** : Next.js 14+, JSX, SCSS + Bootstrap
+- **Frontend** : Next.js 14+, TypeScript (TSX), CSS natif (OOCSS)
 - **Backend** : Node.js + Fastify + Argon2
 - **Database** : PostgreSQL 14+
 - **Infra** : Nginx reverse-proxy (fichiers statiques, compression, logging, rate-limiting)

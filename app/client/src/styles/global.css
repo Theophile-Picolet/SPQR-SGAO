@@ -1,0 +1,21 @@
+/* Global styles. Design tokens, reusable objects and layout will be added by US 00.6. */
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	font-family: system-ui, sans-serif;
+}
+
+.home {
+	padding: 3rem 1.5rem;
+
+	& h1 {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+}
