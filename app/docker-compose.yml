@@ -1,0 +1,89 @@
+# Development environment, started with `npm run docker:up` from app/.
+# The variables come from server/.env (model: server/.env.example): the `--env-file` flag
+# of the npm scripts makes them available to this file, and `env_file` passes them to the server.
+# Nginx is added in epic L, under a `proxy` profile.
+name: spqr-sgao
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "127.0.0.1:${DB_PORT}:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Separate database for all the tests: other port, other credentials, nothing kept on disk
+  db-test:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${TEST_DB_USER}
+      POSTGRES_PASSWORD: ${TEST_DB_PASSWORD}
+      POSTGRES_DB: ${TEST_DB_NAME}
+    ports:
+      - "127.0.0.1:${TEST_DB_PORT}:5432"
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  server:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+      target: dev
+    env_file: server/.env
+    environment:
+      # Between containers the database is reached by its service name, on its own port
+      DB_HOST: db
+      DB_PORT: 5432
+    ports:
+      - "127.0.0.1:${APP_PORT}:${APP_PORT}"
+    volumes:
+      - ./server/src:/app/server/src
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      # No health route yet: the check is that the port accepts connections
+      test: ["CMD", "node", "-e", "require('net').connect(process.env.APP_PORT, '127.0.0.1').on('connect', () => process.exit(0)).on('error', () => process.exit(1))"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  client:
+    build:
+      context: .
+      dockerfile: client/Dockerfile
+      target: dev
+    environment:
+      # `next dev` reads it at startup; the browser reaches the API through the port published by the server
+      API_URL: http://localhost:${APP_PORT}
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - ./client/src:/app/client/src
+    depends_on:
+      server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000').then((r) => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+volumes:
+  db-data:

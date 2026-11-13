@@ -1,0 +1,13 @@
+# Used by the Dockerfiles of client/ and server/, whose build context is this folder.
+# Nothing here may reach an image: dependencies are installed inside it, secrets stay out.
+**/node_modules
+**/.next
+**/out
+**/dist
+**/next-env.d.ts
+**/*.tsbuildinfo
+**/.env
+**/.env.*
+!**/.env.example
+.claude
+.git
