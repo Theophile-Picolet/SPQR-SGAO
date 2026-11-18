@@ -38,6 +38,21 @@ services:
       timeout: 5s
       retries: 10
 
+  # One-shot job: writes database/schema.sql in `db` at each start (nothing happens if it is already there), then exits
+  schema:
+    build:
+      context: .
+      dockerfile: database/Dockerfile
+      target: schema
+    env_file: server/.env
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
   server:
     build:
       context: .
@@ -55,6 +70,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      schema:
+        condition: service_completed_successfully
     healthcheck:
       # No health route yet: the check is that the port accepts connections
       test: ["CMD", "node", "-e", "require('net').connect(process.env.APP_PORT, '127.0.0.1').on('connect', () => process.exit(0)).on('error', () => process.exit(1))"]
@@ -71,6 +88,8 @@ services:
     environment:
       # `next dev` reads it at startup; the browser reaches the API through the port published by the server
       API_URL: http://localhost:${APP_PORT}
+      # No usage data sent to the Next.js maintainers from the development container
+      NEXT_TELEMETRY_DISABLED: 1
     ports:
       - "127.0.0.1:3000:3000"
     volumes:
