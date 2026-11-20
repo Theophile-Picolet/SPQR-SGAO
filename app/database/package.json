@@ -4,9 +4,11 @@
   "version": "0.1.0",
   "scripts": {
     "schema": "tsx --env-file-if-exists=../server/.env src/schema.ts",
+    "seed": "tsx --env-file-if-exists=../server/.env src/seed.ts",
     "check-types": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
+    "argon2": "^0.45.2",
     "pg": "^8.23.1"
   },
   "devDependencies": {
