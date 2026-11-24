@@ -7,7 +7,6 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 COPY client/package.json client/
 COPY server/package.json server/
-COPY database/package.json database/
 
 # Development (used by docker-compose.yml): client/src is bind-mounted for hot reload.
 # API_URL is read when `next dev` starts, so docker-compose.yml passes it as an environment variable.

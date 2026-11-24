@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS "user" (
+CREATE TABLE "user" (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     email VARCHAR(255) UNIQUE NOT NULL,
     hashed_password VARCHAR(255) NOT NULL,
@@ -13,11 +13,11 @@ CREATE TABLE IF NOT EXISTS "user" (
     FOREIGN KEY (updated_by) REFERENCES "user"(id) ON DELETE SET NULL
 );
 
-CREATE INDEX IF NOT EXISTS idx_user_email ON "user"(email);
-CREATE INDEX IF NOT EXISTS idx_user_role ON "user"(role);
-CREATE INDEX IF NOT EXISTS idx_user_active ON "user"(email) WHERE is_active = TRUE;
+CREATE INDEX idx_user_email ON "user"(email);
+CREATE INDEX idx_user_role ON "user"(role);
+CREATE INDEX idx_user_active ON "user"(email) WHERE is_active = TRUE;
 
-CREATE TABLE IF NOT EXISTS division (
+CREATE TABLE division (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     label VARCHAR(100) UNIQUE NOT NULL,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS division (
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS subject (
+CREATE TABLE subject (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     label VARCHAR(255) UNIQUE NOT NULL,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS subject (
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS community (
+CREATE TABLE community (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     label VARCHAR(255) UNIQUE NOT NULL,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS community (
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS consultation (
+CREATE TABLE consultation (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     label VARCHAR(50) UNIQUE NOT NULL,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
@@ -49,12 +49,12 @@ CREATE TABLE IF NOT EXISTS consultation (
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX IF NOT EXISTS idx_division_active ON division(label) WHERE is_active = TRUE;
-CREATE INDEX IF NOT EXISTS idx_subject_active ON subject(label) WHERE is_active = TRUE;
-CREATE INDEX IF NOT EXISTS idx_community_active ON community(label) WHERE is_active = TRUE;
-CREATE INDEX IF NOT EXISTS idx_consultation_active ON consultation(label) WHERE is_active = TRUE;
+CREATE INDEX idx_division_active ON division(label) WHERE is_active = TRUE;
+CREATE INDEX idx_subject_active ON subject(label) WHERE is_active = TRUE;
+CREATE INDEX idx_community_active ON community(label) WHERE is_active = TRUE;
+CREATE INDEX idx_consultation_active ON consultation(label) WHERE is_active = TRUE;
 
-CREATE TABLE IF NOT EXISTS tender (
+CREATE TABLE tender (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     division_id INTEGER,
     community_id INTEGER,
@@ -102,15 +102,15 @@ CREATE TABLE IF NOT EXISTS tender (
     )
 );
 
-CREATE INDEX IF NOT EXISTS idx_tender_division ON tender(division_id);
-CREATE INDEX IF NOT EXISTS idx_tender_consultation ON tender(consultation_id);
-CREATE INDEX IF NOT EXISTS idx_tender_subject ON tender(subject_id);
-CREATE INDEX IF NOT EXISTS idx_tender_community ON tender(community_id);
-CREATE INDEX IF NOT EXISTS idx_tender_result ON tender(result);
-CREATE INDEX IF NOT EXISTS idx_tender_creator ON tender(creator_id);
-CREATE INDEX IF NOT EXISTS idx_tender_visible ON tender(created_at DESC) WHERE is_active = TRUE;
+CREATE INDEX idx_tender_division ON tender(division_id);
+CREATE INDEX idx_tender_consultation ON tender(consultation_id);
+CREATE INDEX idx_tender_subject ON tender(subject_id);
+CREATE INDEX idx_tender_community ON tender(community_id);
+CREATE INDEX idx_tender_result ON tender(result);
+CREATE INDEX idx_tender_creator ON tender(creator_id);
+CREATE INDEX idx_tender_visible ON tender(created_at DESC) WHERE is_active = TRUE;
 
-CREATE TABLE IF NOT EXISTS assignment (
+CREATE TABLE assignment (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     user_id INTEGER NOT NULL,
     tender_id INTEGER NOT NULL,
@@ -127,10 +127,10 @@ CREATE TABLE IF NOT EXISTS assignment (
     CONSTRAINT uq_assignment_user_tender UNIQUE (user_id, tender_id)
 );
 
-CREATE INDEX IF NOT EXISTS idx_assignment_user_active ON assignment(user_id) WHERE statut = 'active';
-CREATE INDEX IF NOT EXISTS idx_assignment_tender_active ON assignment(tender_id) WHERE statut = 'active';
+CREATE INDEX idx_assignment_user_active ON assignment(user_id) WHERE statut = 'active';
+CREATE INDEX idx_assignment_tender_active ON assignment(tender_id) WHERE statut = 'active';
 
-CREATE TABLE IF NOT EXISTS comment (
+CREATE TABLE comment (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     user_id INTEGER NOT NULL,
     tender_id INTEGER NOT NULL,
@@ -143,10 +143,10 @@ CREATE TABLE IF NOT EXISTS comment (
     FOREIGN KEY (tender_id) REFERENCES tender(id) ON DELETE RESTRICT
 );
 
-CREATE INDEX IF NOT EXISTS idx_comment_tender ON comment(tender_id) WHERE is_active = TRUE;
-CREATE INDEX IF NOT EXISTS idx_comment_user ON comment(user_id);
+CREATE INDEX idx_comment_tender ON comment(tender_id) WHERE is_active = TRUE;
+CREATE INDEX idx_comment_user ON comment(user_id);
 
-CREATE TABLE IF NOT EXISTS request (
+CREATE TABLE request (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     tender_id INTEGER NOT NULL,
     requested_by_id INTEGER NOT NULL,
@@ -203,15 +203,15 @@ CREATE TABLE IF NOT EXISTS request (
     )
 );
 
-CREATE INDEX IF NOT EXISTS idx_request_statut ON request(statut) WHERE statut = 'pending';
-CREATE INDEX IF NOT EXISTS idx_request_tender ON request(tender_id);
-CREATE INDEX IF NOT EXISTS idx_request_requested_by ON request(requested_by_id);
+CREATE INDEX idx_request_statut ON request(statut) WHERE statut = 'pending';
+CREATE INDEX idx_request_tender ON request(tender_id);
+CREATE INDEX idx_request_requested_by ON request(requested_by_id);
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_request_unique_pending
+CREATE UNIQUE INDEX idx_request_unique_pending
     ON request(tender_id, requested_by_id, request_type)
     WHERE statut = 'pending';
 
-CREATE TABLE IF NOT EXISTS notification (
+CREATE TABLE notification (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     recipient_id INTEGER NOT NULL,
     author_id INTEGER,
@@ -245,6 +245,6 @@ CREATE TABLE IF NOT EXISTS notification (
     )
 );
 
-CREATE INDEX IF NOT EXISTS idx_notification_recipient_unread
+CREATE INDEX idx_notification_recipient_unread
     ON notification(recipient_id, created_at DESC) WHERE is_read = FALSE;
-CREATE INDEX IF NOT EXISTS idx_notification_tender ON notification(tender_id);
+CREATE INDEX idx_notification_tender ON notification(tender_id);

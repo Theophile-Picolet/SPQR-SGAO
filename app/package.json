@@ -3,18 +3,16 @@
   "private": true,
   "workspaces": [
     "client",
-    "server",
-    "database"
+    "server"
   ],
   "scripts": {
     "dev": "concurrently --names client,server --kill-others-on-fail \"npm:dev:client\" \"npm:dev:server\"",
     "docker:up": "docker compose --env-file server/.env up --build",
-    "docker:db": "docker compose --env-file server/.env up db db-test",
+    "docker:db": "docker compose --env-file server/.env up db",
     "docker:down": "docker compose --env-file server/.env down",
+    "docker:reset": "docker compose --env-file server/.env down -v",
     "dev:client": "npm run dev --workspace client",
     "dev:server": "npm run dev --workspace server",
-    "db:schema": "npm run schema --workspace database",
-    "db:seed": "npm run seed --workspace database",
     "build": "npm run build --workspaces --if-present"
   },
   "devDependencies": {
