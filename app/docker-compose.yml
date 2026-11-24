@@ -1,0 +1,27 @@
+# Services shared by every environment: the database, created with the schema.
+# - development: docker-compose.override.yml is loaded automatically by `docker compose up` (npm run docker:up)
+#   and adds the test data, the server, the client and the published ports
+# - production: docker compose -f docker-compose.yml -f docker-compose.prod.yml --env-file <file> up -d
+#   (naming the files with -f skips the override, so the test data is never loaded)
+# Nginx is added in epic L, under a `proxy` profile.
+name: spqr-sgao
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${DB_USER:?DB_USER is required}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+      POSTGRES_DB: ${DB_NAME:?DB_NAME is required}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      # Scripts of this folder run once, when the volume is empty (first start)
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  db-data:

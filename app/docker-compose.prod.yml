@@ -1,0 +1,8 @@
+# Production, on top of docker-compose.yml (database with the schema only), completed in epic L (Nginx, server, client):
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml --env-file <file> up -d
+# Always name both files with -f: without it, docker-compose.override.yml (development, with the test data) is loaded.
+# The variables come from a file created on the production server and never committed (.env.production is ignored by Git).
+# Nothing is published on the host. The database starts clean: the first administrator and the lists come from the server.
+services:
+  db:
+    restart: unless-stopped
