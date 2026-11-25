@@ -20,8 +20,10 @@ import cors from "@fastify/cors";
 const allowedOrigins = process.env.ALLOWED_ORIGINS;
 
 app.register(cors, {
-	origin: allowedOrigins ? allowedOrigins.split(",").map((origin) => origin.trim()) : [],
-	credentials: true,
+  origin: allowedOrigins
+    ? allowedOrigins.split(",").map((origin) => origin.trim())
+    : [],
+  credentials: true,
 });
 
 /* ************************************************************************* */
@@ -39,7 +41,7 @@ app.register(router);
 import errorHandler from "./middlewares/errorHandler";
 
 if (process.env.NODE_ENV !== "development") {
-	app.setErrorHandler(errorHandler);
+  app.setErrorHandler(errorHandler);
 }
 
 export default app;

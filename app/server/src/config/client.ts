@@ -1,20 +1,21 @@
 // Import pg for PostgreSQL
-import { Pool } from "pg";
+
 import type { Pool as PgPool, QueryResult, QueryResultRow } from "pg";
+import { Pool } from "pg";
 
 // Create the PostgreSQL pool from the environment variables (shared by all repositories)
 const client = new Pool({
-	host: process.env.DB_HOST,
-	port: Number(process.env.DB_PORT),
-	user: process.env.DB_USER,
-	password: process.env.DB_PASSWORD,
-	database: process.env.DB_NAME,
-	ssl: false,
+  host: process.env.DB_HOST,
+  port: Number(process.env.DB_PORT),
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  ssl: false,
 });
 
 // An idle client can fail (network, database restart): log it instead of crashing the process
 client.on("error", (error: Error) => {
-	console.error("Unexpected PostgreSQL pool error:", error.message);
+  console.error("Unexpected PostgreSQL pool error:", error.message);
 });
 
 export default client;

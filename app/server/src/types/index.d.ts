@@ -4,7 +4,7 @@ import "fastify";
 export type Role = "consultant" | "manager" | "admin";
 
 declare module "fastify" {
-	interface FastifyRequest {
-		user?: { id: number; role: Role };
-	}
+  interface FastifyRequest {
+    user?: { id: number; role: Role };
+  }
 }

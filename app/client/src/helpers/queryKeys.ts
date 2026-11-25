@@ -2,12 +2,12 @@
 // Start every key of a domain with its name, e.g. [...queryKeys.tender, "list", filters],
 // so that invalidateQueries({ queryKey: queryKeys.tender }) refreshes the whole domain.
 export const queryKeys = {
-	account: ["account"],
-	tender: ["tender"],
-	nomenclature: ["nomenclature"],
-	user: ["user"],
-	assignment: ["assignment"],
-	request: ["request"],
-	comment: ["comment"],
-	notification: ["notification"],
+  account: ["account"],
+  tender: ["tender"],
+  nomenclature: ["nomenclature"],
+  user: ["user"],
+  assignment: ["assignment"],
+  request: ["request"],
+  comment: ["comment"],
+  notification: ["notification"],
 } as const;

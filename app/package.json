@@ -13,9 +13,13 @@
     "docker:reset": "docker compose --env-file server/.env down -v",
     "dev:client": "npm run dev --workspace client",
     "dev:server": "npm run dev --workspace server",
-    "build": "npm run build --workspaces --if-present"
+    "build": "npm run build --workspaces --if-present",
+    "lint": "biome check .",
+    "format": "biome format --write .",
+    "check-types": "npm run check-types --workspaces"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.6.9",
     "concurrently": "^10.0.7"
   }
 }

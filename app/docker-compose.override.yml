@@ -29,7 +29,13 @@ services:
         condition: service_healthy
     healthcheck:
       # No health route yet: the check is that the port accepts connections
-      test: ["CMD", "node", "-e", "require('net').connect(process.env.APP_PORT, '127.0.0.1').on('connect', () => process.exit(0)).on('error', () => process.exit(1))"]
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('net').connect(process.env.APP_PORT, '127.0.0.1').on('connect', () => process.exit(0)).on('error', () => process.exit(1))",
+        ]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -53,7 +59,13 @@ services:
       server:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000').then((r) => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000').then((r) => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))",
+        ]
       interval: 10s
       timeout: 10s
       retries: 10
