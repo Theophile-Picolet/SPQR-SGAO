@@ -16,10 +16,18 @@
     "build": "npm run build --workspaces --if-present",
     "lint": "biome check .",
     "format": "biome format --write .",
-    "check-types": "npm run check-types --workspaces"
+    "check-types": "npm run check-types --workspaces",
+    "prepare": "cd .. && husky app/.husky || true"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.6.9",
-    "concurrently": "^10.0.7"
+    "@commitlint/cli": "^21.2.4",
+    "@commitlint/config-conventional": "^21.2.4",
+    "concurrently": "^10.0.7",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0"
+  },
+  "lint-staged": {
+    "*": "biome check --write --no-errors-on-unmatched --files-ignore-unknown=true"
   }
 }
