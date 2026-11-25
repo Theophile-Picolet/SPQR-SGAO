@@ -29,5 +29,9 @@
   },
   "lint-staged": {
     "*": "biome check --write --no-errors-on-unmatched --files-ignore-unknown=true"
+  },
+  "allowScripts": {
+    "esbuild": false,
+    "fsevents": false
   }
 }
